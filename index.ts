@@ -1,20 +1,29 @@
 import crypto from "crypto";
-import cv from "@u4/opencv4nodejs";
-import { FileType, screen } from "@nut-tree/nut-js";
+import {
+  FileType,
+  Region,
+  centerOf,
+  mouse,
+  screen,
+  sleep,
+  straightTo,
+} from "@nut-tree/nut-js";
+import finder from "@udarrr/template-matcher";
 (async () => {
+  mouse.config.mouseSpeed = 1000;
   let randomString = crypto.randomBytes(4).toString("hex");
-  await screen.capture(`${randomString}`, FileType.PNG, "screenshots/");
-  let desktop = await cv.imreadAsync("screenshots/desktop1.png");
-  let icons = await cv.imreadAsync("toolbar.png");
-  const matched = desktop.matchTemplate(icons, cv.TM_CCOEFF_NORMED);
-  const minMax = matched.minMaxLoc();
-  const {
-    maxLoc: { x, y },
-  } = minMax;
-  desktop.drawRectangle(
-    new cv.Rect(x, y, icons.cols, icons.rows),
-    new cv.Vec3(0, 255, 0),
-    2,
-    cv.LINE_8
-  );
+  // Capture desktop image
+  // await screen.capture(`${randomString}`, FileType.PNG, "screenshots/");
+  
+  let desktop = `screenshots/${randomString}.png`;
+  let icons = "wad.png";
+  // find image using free package (lol)
+  const matcheImages = await finder.findMatch({
+    haystack: desktop,
+    needle: icons,
+  });
+  const mil = matcheImages.location;
+  const mir = new Region(mil.left, mil.top, mil.width, mil.height);
+  await mouse.move(straightTo(centerOf(mir)));
+  // set highlight location
 })();

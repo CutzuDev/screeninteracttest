@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@nut-tree/nut-js": "^3.1.2",
-    "@udarrr/template-matcher": "^4.5.4"
+    "@udarrr/template-matcher": "^4.5.4",
+    "node-global-key-listener": "^0.1.1",
+    "ts-node": "^10.9.2"
   }
 }

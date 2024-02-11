@@ -1,29 +1,63 @@
-import crypto from "crypto";
+// import crypto from "crypto";
 import {
+  Button,
   FileType,
+  Key,
+  Point,
   Region,
   centerOf,
+  keyboard,
+  linear,
   mouse,
   screen,
   sleep,
   straightTo,
 } from "@nut-tree/nut-js";
-import finder from "@udarrr/template-matcher";
+
+// import finder from "@udarrr/template-matcher";
+// (async () => {
+//   while (true) {
+//     // 1843 404
+//     console.log((await screen.colorAt(new Point(1843, 404))).toHex());
+//     if ((await screen.colorAt(new Point(1843, 404))).toHex() == "#1424c2ff") {
+//       // keyboard.type(Key.X);
+//       // await mouse.setPosition(new Point(1838, 759));
+//       await mouse.click(Button.LEFT);
+//       console.log("true");
+//       break;
+//     }
+//     await sleep(1);
+//   }
+// })();
+
+import { GlobalKeyboardListener } from "node-global-key-listener";
+const v = new GlobalKeyboardListener();
+
 (async () => {
-  mouse.config.mouseSpeed = 1000;
-  let randomString = crypto.randomBytes(4).toString("hex");
-  // Capture desktop image
-  // await screen.capture(`${randomString}`, FileType.PNG, "screenshots/");
-  
-  let desktop = `screenshots/${randomString}.png`;
-  let icons = "wad.png";
-  // find image using free package (lol)
-  const matcheImages = await finder.findMatch({
-    haystack: desktop,
-    needle: icons,
+  let firstSafeGuard = true;
+  let secondSafeGuard = true;
+  keyboard.config.autoDelayMs = 0;
+  v.addListener(function (e, down) {
+    if (e.rawKey._nameRaw == "VK_OEM_5") {
+      firstSafeGuard = false;
+    }
+    if (e.rawKey._nameRaw == "VK_OEM_MINUS") {
+      secondSafeGuard = false;
+    }
+    if (e.rawKey._nameRaw == "VK_OEM_PLUS") {
+      secondSafeGuard = true;
+    }
   });
-  const mil = matcheImages.location;
-  const mir = new Region(mil.left, mil.top, mil.width, mil.height);
-  await mouse.move(straightTo(centerOf(mir)));
-  // set highlight location
+  while (firstSafeGuard) {
+    if (secondSafeGuard) {
+      if ((await screen.colorAt(new Point(1837, 465))).R === 20) {
+        keyboard.type(Key.X);
+        await sleep(1000);
+        keyboard.type(Key.X);
+      }
+    }
+    await sleep(1);
+  }
+
+  console.log("loop stopped");
 })();
